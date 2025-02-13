@@ -132,3 +132,37 @@ The added [requirements file](requirements.txt) contains all libraries and depen
     python -m pip install --upgrade pip
     pip install -r requirements.txt
     ```
+
+
+
+### Ollama and Deepseek install
+
+## 🚀 Setup Guide
+
+### **1️⃣ Create Virtual Environment**
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Mac/Linux
+# OR
+source .venv/Scripts/activate  # Windows
+```
+
+### 2️⃣ Install Dependencies
+
+pip install ollama langchain beautifulsoup4 requests scrapy pandas chromadb faiss-cpu sentence-transformers tiktoken
+
+### 3️⃣ Install & Run Deepseek LLM
+
+# Install Ollama (if not already installed)
+curl -fsSL https://ollama.com/install.sh | sh  # Mac/Linux
+# Download Deepseek Model
+ollama pull deepseek-r1
+# Test the model
+ollama run deepseek-r1 "What is fake news?"
+
+### 4️⃣ Quick Test in Python
+
+import ollama
+
+response = ollama.chat(model="deepseek", messages=[{"role": "user", "content": "Analyze this news: The moon landing was fake. How credible is this?"}])
+print(response['message']['content'])
