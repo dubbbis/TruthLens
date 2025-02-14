@@ -19,7 +19,7 @@
 
 ## **✅ Checklist**
 
-### **1️⃣ Set Up LLM Integration Using API**
+### **1️⃣ Set Up LLM Integration without using API**
 #### **Ollama**
 - ✅ **Deepseek-R1 downloaded and running**  
 
@@ -37,24 +37,30 @@
 ---
 
 ### **3️⃣ Build RAG (Retrieval-Augmented Generation)**
-- ✅ **Storage:** Store news content in **ChromaDB** (vector database)  
 - ✅ **Retrieval:** Fetch related context for analyzing new news articles  
 - ✅ **Fact-Checking:** Pass retrieved context + new query to **Deepseek-R1**  
-- 🔹 **Improvements Needed:**  
+    - Further testing needed here.
+- 🔹 **Improvements Needed:** 
+  - **Storage:** Store news content in **ChromaDB** (vector database)  
   - **Optimize linguistic analysis** (improve cross-checking & fact-checking)  
+    - Make **`linguistic_news.json`** with enhanced information
   - **Refine sentiment analysis** (document metrics clearly for model interpretation)  
 
 ---
 
 ### **4️⃣ Build Fake News Detection Prompts**
-- ✅ Use **`cleaned_news.json`** as input for LLM  
+- ✅ Use **`linguistic_news.json`** as input for LLM  
 - ✅ Ensure **text, summaries, and linguistic analysis** are included in the dataset  
 
 ---
 
 ### **5️⃣ Testing & Iteration**
 - ✅ **Generate Fake News using GPT** and feed it into the model  
-- ✅ Format generated fake news in **`news.json`** for structured testing  
+- ✅ Format generated fake news in **`news.json`** for structured testing
+    - 🔹 **Improvements Needed:** 
+        - Need to put this all through RAG and cleaning pipeline, then off to the LLM for testing
+        - Work out the best way to compare old and new model results, start running and tracking them
+        - Will be able to deliver lots of good data already at MVP demo
 
 ---
 
