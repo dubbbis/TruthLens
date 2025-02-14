@@ -1,64 +1,76 @@
-## FakeBuster Planning
+# 📰 FakeBuster Planning  
 
-MVP Creation
+## 🎯 MVP Creation  
+**MVP Due:** **Feb 21**  
 
-MVP:
-Due: Feb 21
+### **✅ Dates and Work Finished**
+- **Feb 12** - Planning + API Integration  
+- **Feb 13** - Continued API and testing with LLM (Deepseek-R1)  
+- **Feb 14** - API collection improvements, vector store of JSON data, start RAG and preprocessing  
 
-Dates and work finished:
-* Feb 12 - planning + API Integration
-* Feb 13 - continued API and testing with LLM - deepseek-r1
-* Feb 14 - API collection improvements and testing: vector store of json data, start RAG and preprocessing
+### **📅 Upcoming Tasks**
+- **Feb 17** - TBD  
+- **Feb 18** - TBD  
+- **Feb 19** - TBD  
+- **Feb 20** - TBD  
+- **Feb 21** - 🎤 **MVP Demo Needed!**  
 
-* Feb 17
-* Feb 18
-* Feb 19
-* Feb 20
-* Feb 21 -- MVP DEMO NEEDED
+---
 
+## **✅ Checklist**
 
-## Checklist
+### **1️⃣ Set Up LLM Integration Using API**
+#### **Ollama**
+- ✅ **Deepseek-R1 downloaded and running**  
 
-1. Set up LLM Integration using API
+#### **LLM Testing**
+- 🔹 **Deepseek-R1:** Running locally  
+- 🔹 **Llama:** **Needs testing** (Planned for next week or the following week)  
 
-Ollama
-* We downloaded deepseek-r1 and have it running
+---
 
-a. DEEPSEEK
- * Running it locally
+### **2️⃣ Build API Framework**
+- ✅ **Connect to news sources & gather article data**  
+  - **Fields needed:** `title`, `URL`, `full text content`  
+- 🔹 **Next Week:** Determine how many articles are saved in `news.json`  
 
-b. LLAMA
- * Need to test this!! <-- either next week or the week after 
+---
 
+### **3️⃣ Build RAG (Retrieval-Augmented Generation)**
+- ✅ **Storage:** Store news content in **ChromaDB** (vector database)  
+- ✅ **Retrieval:** Fetch related context for analyzing new news articles  
+- ✅ **Fact-Checking:** Pass retrieved context + new query to **Deepseek-R1**  
+- 🔹 **Improvements Needed:**  
+  - **Optimize linguistic analysis** (improve cross-checking & fact-checking)  
+  - **Refine sentiment analysis** (document metrics clearly for model interpretation)  
 
-2. Build API Framework
-    - Connect to news sites, gather data for each article
-        - title, url, content (text) 
-        - full text from each article is needed
-        - next week: figure out how many articles saved in news.json
+---
 
+### **4️⃣ Build Fake News Detection Prompts**
+- ✅ Use **`cleaned_news.json`** as input for LLM  
+- ✅ Ensure **text, summaries, and linguistic analysis** are included in the dataset  
 
-3. Build RAG
-    - Storage: Store news content in a vector database (ChromaDB).
-    - Retrieve related context when analyzing a new news article.
-    - Pass retrieved context + new query to your local LLM Deepseek-R1 for enhanced fact-checking.
-    - Still need to optimize linguistic analysis and include sections for crosschecking and factchecking
-    - Sentiment Analysis solidify and explain the metrics (so we understand) also so we make sure LLM understand
+---
 
+### **5️⃣ Testing & Iteration**
+- ✅ **Generate Fake News using GPT** and feed it into the model  
+- ✅ Format generated fake news in **`news.json`** for structured testing  
 
-4. Build Fake News Detection Prompts
-    - Use new cleaned_news.json to send to LLM 
-    - cleaned_news.json has text along with summary and linguistic_analysis data
+---
 
+### **6️⃣ Scaling & Storage Optimization**
+- 🔹 Plan how to **store & manage more news articles efficiently**  
+- 🔹 Consider organizing **long-term storage solutions**  
 
-4. Testing and Iteration
-    - Create Fake News from GPT and feed that into the model
-        format is news.json
+---
 
-5. Think about scaling the storage of the news.json 
-    - to allow for more storage and some organize
+### **7️⃣ (Optional) Build a Front-End**
+- 🔹 If time permits, develop a **UI for querying & displaying fact-checked articles**  
 
-6. Build a Front End (optional)
+---
 
+## **🚀 MVP Deadline: Feb 21st**
+🎯 **Goal:** **Fully functional Fake News Detector**  
+🎤 **Deliverable:** Live demo + system walkthrough  
 
-## DUE Feb 21st - MVP for Demo
+🔥 **Next steps:** Continue improving RAG retrieval, finalize LLM testing, and prepare for the MVP demo!  
