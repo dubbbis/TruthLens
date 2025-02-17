@@ -19,32 +19,43 @@
 
 ## **✅ Checklist**
 
-### **1️⃣ Set Up LLM Integration without using API**
+### **1️⃣ Set Up LLM Integration (Without Using API)**
 #### **Ollama**
 - ✅ **Deepseek-R1 downloaded and running**  
 
 #### **LLM Testing**
-- 🔹 **Deepseek-R1:** Running locally  
+- ✅ **Deepseek-R1:** Running locally  
 - 🔹 **Llama:** **Needs testing** (Planned for next week or the following week)  
 
 ---
 
 ### **2️⃣ Build API Framework**
 - ✅ **Connect to news sources & gather article data**  
-  - **Fields needed:** `title`, `URL`, `full text content`  
+    - We are using **Mediastack API**  
+    - **Usage limit:** 100 requests per month → Keep this in mind during testing  
+    - **Solution:** Create a second account if we need more requests  
+- ✅ **Fields needed:** `title`, `URL`, `full-text content`  
 - 🔹 **Next Week:** Determine how many articles are saved in `news.json`  
+    - 📌 **To-Do:** Figure out **ChromaDB** and how to store large amounts of articles  
 
 ---
 
 ### **3️⃣ Build RAG (Retrieval-Augmented Generation)**
 - ✅ **Retrieval:** Fetch related context for analyzing new news articles  
+    - Using `news.json` data gathered via API framework  
+    - Initial RAG testing has been done ✅  
+    - **Needs major improvements!** We also need **evaluation metrics** to track progress  
+    - **🔹 Advice Needed:** How to effectively test and improve RAG?  
+
+#### **🔹 Improvements Needed:**  
 - ✅ **Fact-Checking:** Pass retrieved context + new query to **Deepseek-R1**  
-    - Further testing needed here.
-- 🔹 **Improvements Needed:** 
-  - **Storage:** Store news content in **ChromaDB** (vector database)  
-  - **Optimize linguistic analysis** (improve cross-checking & fact-checking)  
-    - Make **`linguistic_news.json`** with enhanced information
-  - **Refine sentiment analysis** (document metrics clearly for model interpretation)  
+- ✅ **Cross-Checking:** Pass retrieved context + new query to **Deepseek-R1**  
+    - **Further testing required** to refine accuracy  
+- ✅ **Storage:** Store news content in **ChromaDB** (vector database)  
+- ✅ **Optimize & expand linguistic analysis**  
+    - Create **`linguistic_news.json`** with enhanced fact-checking details  
+- ✅ **Refine Sentiment Analysis**  
+    - Clearly document metrics for **better LLM interpretation**  
 
 ---
 
@@ -56,17 +67,19 @@
 
 ### **5️⃣ Testing & Iteration**
 - ✅ **Generate Fake News using GPT** and feed it into the model  
-- ✅ Format generated fake news in **`news.json`** for structured testing
-    - 🔹 **Improvements Needed:** 
-        - Need to put this all through RAG and cleaning pipeline, then off to the LLM for testing
-        - Work out the best way to compare old and new model results, start running and tracking them
-        - Will be able to deliver lots of good data already at MVP demo
+- ✅ Format generated fake news in **`news.json`** for structured testing  
+
+#### **🔹 Improvements Needed:**  
+- **Put fake news through RAG and cleaning pipeline** before testing with LLM  
+- **Compare old vs. new model results** → Set up structured evaluations  
+- **Start tracking model performance over time** (logs, accuracy trends, etc.)  
+- **Expected Outcome:** We should have **strong test data** ready for the MVP demo  
 
 ---
 
 ### **6️⃣ Scaling & Storage Optimization**
-- 🔹 Plan how to **store & manage more news articles efficiently**  
-- 🔹 Consider organizing **long-term storage solutions**  
+- 🔹 Plan how to **store & manage a larger dataset of news articles efficiently**  
+- 🔹 Consider organizing **long-term storage solutions** for future expansion  
 
 ---
 
@@ -79,4 +92,7 @@
 🎯 **Goal:** **Fully functional Fake News Detector**  
 🎤 **Deliverable:** Live demo + system walkthrough  
 
-🔥 **Next steps:** Continue improving RAG retrieval, finalize LLM testing, and prepare for the MVP demo!  
+🔥 **Next Steps:**  
+1️⃣ Continue improving **RAG retrieval**  
+2️⃣ Finalize **LLM testing & fact-checking prompts**  
+3️⃣ **Prepare for the MVP demo!**  
