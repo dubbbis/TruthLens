@@ -12,6 +12,8 @@ from dateutil import parser
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 from langdetect import detect, DetectorFactory
+from newspaper import Article  # Newspaper3k for full-text extraction
+from unstructured.partition.html import partition_html  # Unstructured for full-text extraction
 from urllib.parse import urlparse
 from collections import defaultdict
 import random
@@ -110,6 +112,37 @@ class NewsScraper:
             await asyncio.sleep(2 ** attempt)  # Exponential backoff
         return None
 
+    async def extract_full_text(self, session, url):
+        """Extracts article content using newspaper3k, Unstructured, and BeautifulSoup asynchronously."""
+        try:
+            headers = {'User-Agent': self.ua}
+            async with session.get(url, headers=headers, timeout=10) as response:
+                if response.status != 200:
+                    return f"Error: Page returned status code {response.status}"
+                html = await response.text()
+                
+                # Try newspaper3k
+                article = Article(url)
+                article.download()
+                article.html = html  # Manually assign HTML content
+                article.parse()
+                if len(article.text) > 500:
+                    return article.text
+                
+                # Try Unstructured
+                elements = partition_html(text=html)
+                extracted_text = "\n".join([el.text for el in elements if el.text.strip()])
+                if len(extracted_text) > 500:
+                    return extracted_text
+                
+                # Try BeautifulSoup
+                soup = BeautifulSoup(html, "html.parser")
+                paragraphs = soup.find_all("p")
+                extracted_text = "\n".join([p.get_text() for p in paragraphs])
+                return extracted_text if len(extracted_text) > 500 else "Content could not be extracted."
+        except Exception as e:
+            return f"Error extracting content: {str(e)}"
+
     async def fetch_articles(self):
         """Fetches articles from the API in batches with quality checks and includes full text processing."""
         all_articles = []
@@ -136,15 +169,17 @@ class NewsScraper:
                     domain_count = defaultdict(int)
                     new_articles = []  # Temporarily hold newly fetched articles for this attempt
                     
+                    tasks = []  # List of tasks for full text extraction
+                    
                     for article in response.get("data", []):
                         if len(all_articles) >= self.max_articles:
                             break
-                        
+                    
                         # Article basic fields
                         domain = urlparse(article["url"]).netloc
                         title = article.get("title", "").strip()
                         description = article.get("description", "").strip()
-                        content = article.get("content", "").strip()  # Fetching the full content here
+                        url = article.get("url", "")  # Use the article URL for scraping full content
                         published_date = article.get("published_at", "")
                         author = article.get("author", "Unknown author")
                         
@@ -154,7 +189,7 @@ class NewsScraper:
                             continue
                         
                         # 2. Check article length: Minimum content length (e.g., 50 words or 200 characters)
-                        if len(description.split()) < 20 and len(content) < 200:
+                        if len(description.split()) < 50:
                             continue
                         
                         # 3. Check for spammy domains (known bad domains)
@@ -166,7 +201,7 @@ class NewsScraper:
                             continue
                         
                         # 5. Avoid duplicates based on hash or URL
-                        article_hash = self.get_article_hash(title, description + content)  # Include content in hash
+                        article_hash = self.get_article_hash(title, description)
                         if article_hash in self.article_hashes:
                             continue
                         
@@ -174,25 +209,30 @@ class NewsScraper:
                         if domain_count[domain] >= domain_limit:
                             continue
                         domain_count[domain] += 1
-                        
-                        # Clean and add the full text content after processing
-                        cleaned_content = self.clean_text(content)
-                        
-                        # Add article to list
-                        article_data = {
-                            "author": self.clean_text(author),
-                            "title": self.clean_text(title),
-                            "description": self.clean_text(description),
-                            "url": article.get("url", ""),
-                            "source": article.get("source", "Unknown source"),
-                            "category": article.get("category", "Unknown category"),
-                            "language": article.get("language", "Unknown language"),
-                            "country": article.get("country", "Unknown country"),
-                            "published_date": published_date,
-                            "content": cleaned_content  # Save the full content in the JSON
-                        }
-                        new_articles.append(article_data)
-                        self.article_hashes.add(article_hash)  # Track this article as processed
+
+                        # Add the full-text extraction task
+                        tasks.append(self.extract_full_text(session, url))
+                    
+                    # Wait for all content extraction tasks to complete
+                    full_texts = await asyncio.gather(*tasks)
+                    
+                    # Update the articles with the full content
+                    for i, text in enumerate(full_texts):
+                        if len(all_articles) < self.max_articles:  # Only update if still collecting
+                            article_data = {
+                                "author": self.clean_text(author),
+                                "title": self.clean_text(title),
+                                "description": self.clean_text(description),
+                                "url": url,
+                                "source": article.get("source", "Unknown source"),
+                                "category": article.get("category", "Unknown category"),
+                                "language": article.get("language", "Unknown language"),
+                                "country": article.get("country", "Unknown country"),
+                                "published_date": published_date,
+                                "content": self.clean_text(text)  # Save the full content in the JSON
+                            }
+                            new_articles.append(article_data)
+                            self.article_hashes.add(article_hash)  # Track this article as processed
 
                     # If new articles were fetched, add them to the total list
                     if new_articles:
@@ -248,7 +288,7 @@ if __name__ == "__main__":
 #
 # In gitbash: 
 # 
-# pip install aiohttp beautifulsoup4 fake_useragent langdetect python-dateutil python-dotenv
+# pip install aiohttp beautifulsoup4 fake_useragent langdetect python-dateutil python-dotenv newspaper3k unstructured
 #
 # python data_collect.py
 
