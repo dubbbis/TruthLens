@@ -39,7 +39,7 @@ def safe_user_agent():
 
 class NewsScraper:
     def __init__(self, api_key=None, max_articles=250, max_api_calls=5, max_concurrent_requests=10,
-                 time_filter="last_month", start_date=None, end_date=None, randomize=False):
+                 time_filter="last_week", start_date=None, end_date=None, randomize=False):
         self.api_key = api_key or args.api_key or os.getenv("API_KEY")
         if not self.api_key:
             raise ValueError("API key is required. Set it in .env or pass via --api-key.")
@@ -82,9 +82,11 @@ class NewsScraper:
         """Cleans up extracted text for better readability."""
         if not text:
             return ""
-        text = re.sub(r"\s+", " ", text)
-        text = re.sub(r"http\S+", "", text)
-        text = unicodedata.normalize("NFKC", text)
+        # Remove unwanted whitespace, symbols, and URLs
+        text = re.sub(r"\s+", " ", text)  # Collapse multiple spaces into one
+        text = re.sub(r"http\S+", "", text)  # Remove URLs
+        text = re.sub(r"[^\x00-\x7F]+", "", text)  # Remove non-ASCII characters (optional)
+        text = unicodedata.normalize("NFKC", text)  # Normalize unicode characters
         return text.strip()
 
     def get_article_hash(self, title, content):
@@ -109,7 +111,7 @@ class NewsScraper:
         return None
 
     async def fetch_articles(self):
-        """Fetches articles from the API in batches with quality checks, domain limits, and stopping after 3 empty attempts."""
+        """Fetches articles from the API in batches with quality checks and includes full text processing."""
         all_articles = []
         domain_limit = 3  # Limit number of articles per domain (e.g., 3 articles per domain)
         no_new_articles_count = 0  # Track how many consecutive calls have resulted in no new articles
@@ -142,7 +144,7 @@ class NewsScraper:
                         domain = urlparse(article["url"]).netloc
                         title = article.get("title", "").strip()
                         description = article.get("description", "").strip()
-                        content = article.get("content", "").strip()
+                        content = article.get("content", "").strip()  # Fetching the full content here
                         published_date = article.get("published_at", "")
                         author = article.get("author", "Unknown author")
                         
@@ -152,7 +154,7 @@ class NewsScraper:
                             continue
                         
                         # 2. Check article length: Minimum content length (e.g., 50 words or 200 characters)
-                        if len(description.split()) < 50 and len(content) < 200:
+                        if len(description.split()) < 20 and len(content) < 200:
                             continue
                         
                         # 3. Check for spammy domains (known bad domains)
@@ -164,7 +166,7 @@ class NewsScraper:
                             continue
                         
                         # 5. Avoid duplicates based on hash or URL
-                        article_hash = self.get_article_hash(title, description)
+                        article_hash = self.get_article_hash(title, description + content)  # Include content in hash
                         if article_hash in self.article_hashes:
                             continue
                         
@@ -172,6 +174,9 @@ class NewsScraper:
                         if domain_count[domain] >= domain_limit:
                             continue
                         domain_count[domain] += 1
+                        
+                        # Clean and add the full text content after processing
+                        cleaned_content = self.clean_text(content)
                         
                         # Add article to list
                         article_data = {
@@ -184,6 +189,7 @@ class NewsScraper:
                             "language": article.get("language", "Unknown language"),
                             "country": article.get("country", "Unknown country"),
                             "published_date": published_date,
+                            "content": cleaned_content  # Save the full content in the JSON
                         }
                         new_articles.append(article_data)
                         self.article_hashes.add(article_hash)  # Track this article as processed
