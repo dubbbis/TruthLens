@@ -226,7 +226,7 @@ def reciprocal_rank_fusion(bm25_results, dense_results, k=60):
         scores[doc] += 1 / (rank + k)
     return sorted(scores, key=scores.get, reverse=True)
 
-print(f"Running hybrid search for similar articles related to article {doc_id}...")
+print(f"Running hybrid search for similar articles related to article...")
 # Hybrid Search Function
 def hybrid_search(query, documents, mode="hybrid"):
     """

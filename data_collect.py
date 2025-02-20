@@ -432,7 +432,6 @@ class NewsScraper:
             self.database.commit_articles()
         print(f"✅ Committed {len(self.database.articles_batch)} articles to ChromaDB.")
 
-
 if __name__ == "__main__":
     # ✅ Initialize ChromaDB client
     db_client = chromadb.PersistentClient(path="./chroma_db")
