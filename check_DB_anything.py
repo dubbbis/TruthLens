@@ -16,3 +16,4 @@ else:
 
 # Additional check: Count total entries
 print(f"📊 Total entries in ChromaDB: {collection.count()}")
+

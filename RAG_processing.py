@@ -261,7 +261,6 @@ def hybrid_search(query, documents, mode="hybrid"):
     # ✅ Otherwise, return results from the selected method
     return bm25_results if mode == "bm25" else dense_results
 
-
 # Function to compute sentiment analysis using BERT
 import numpy as np
 from nltk.tokenize import sent_tokenize

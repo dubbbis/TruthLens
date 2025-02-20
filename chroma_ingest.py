@@ -201,7 +201,6 @@ class JSONToChromaDB:
 
 
 
-
 # ✅ Run the script
 if __name__ == "__main__":
     json_loader = JSONToChromaDB(news_dir="NEWS_FILES", chroma_db_path="./chroma_db", load_all=True)

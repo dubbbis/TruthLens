@@ -474,7 +474,6 @@ if __name__ == "__main__":
     scraper.finalize_scraping()
 
 
-
 # To run the scraper
 #
 # In gitbash: 
